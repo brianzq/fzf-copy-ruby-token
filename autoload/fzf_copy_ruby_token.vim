@@ -28,7 +28,17 @@ function! s:source_lines(token)
   return matches
 endfunction
 
+" Make tokens REPL friendly. In the highly unlikely case there are multiple
+" pound signs, only replace the last one.
+"
+" https://stackoverflow.com/questions/736120/why-are-methods-in-ruby-documentation-preceded-by-a-hash-sign
+" https://stackoverflow.com/questions/11865845/replace-last-occurrence-in-line
+function! s:convert_last_pound_to_dot(text)
+  return substitute(a:text, '.*\zs#', '.', '')
+endfunction
+
 function! s:copy_to_clipboard(text)
-  execute 'let @+="' . a:text . '"'
-  echom('Copied to clipboard: ' . string(a:text))
+  let text_to_copy = s:convert_last_pound_to_dot(a:text)
+  execute 'let @+="' . text_to_copy . '"'
+  echom('Copied to clipboard: ' . string(text_to_copy))
 endfunction
